@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-import keyboard
 import random
 
 def fetch_and_process_data(url):
@@ -43,7 +42,7 @@ def fetch_and_process_data(url):
             total_B += B
             
             # Format the row data and add it to the array
-            row_string = f"{third_column_text}: {fifth_column_text} {sixth_column_text}"
+            row_string = f"{third_column_text}: {fifth_column_text} {sixth_column_text}%"
             row_data.append(row_string)
     
     # Combine the accumulated values of A and B in the A/B format
@@ -62,19 +61,14 @@ def fetch_and_process_data(url):
     # Print for debugging
     for row in row_data:
         print(row)
-    print(f"Total A/B: {result}")
+    print(f"{result}")
 
 # Ask the user for the URL
 url = input("Please enter the URL of the web page: ")
-
-print("Press 'q' to exit the application.")
 
 while True:
     fetch_and_process_data(url)
     
     # Wait for 60 seconds
     for i in range(15):
-        if keyboard.is_pressed('q'):
-            print("Exiting the application.")
-            exit()
         time.sleep(1)
