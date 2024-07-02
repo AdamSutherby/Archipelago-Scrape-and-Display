@@ -43,11 +43,12 @@ def fetch_and_process_data(url, names_list=None):
             total_B += B
             
             # Format the row data and add it to the array
-            row_string = f"{third_column_text}: {fifth_column_text} {sixth_column_text}%"
+            row_string = f"{third_column_text}: {fifth_column_text} ({sixth_column_text}%)"
             row_data.append(row_string)
     
     # Combine the accumulated values of A and B
-    result = f"Total: {total_A}/{total_B}"
+    percentage = (total_A / total_B) * 100 if total_B != 0 else 0
+    result = f"Total: {total_A}/{total_B} ({percentage:.2f}%)"
     
     # Write one of the row strings to a text file
     if row_data:
@@ -68,10 +69,10 @@ def fetch_and_process_data(url, names_list=None):
 url = input("Please enter the URL of the web page: ")
 
 # Ask the user if they want to filter by usernames
-filter_choice = input("Do you want to filter by usernames? (yes/no): ").strip().lower()
+filter_choice = input("Do you want to filter by usernames? (y/n): ").strip().lower()
 
 names_list = []
-if filter_choice == "yes":
+if filter_choice == "y":
     while True:
         name = input("Enter a username (or press enter to finish): ").strip()
         if not name:
@@ -79,7 +80,7 @@ if filter_choice == "yes":
         names_list.append(name)
 
 while True:
-    fetch_and_process_data(url, names_list if filter_choice == "yes" else None)
+    fetch_and_process_data(url, names_list if filter_choice == "y" else None)
     
     # Wait for 15 seconds
     for i in range(15):
