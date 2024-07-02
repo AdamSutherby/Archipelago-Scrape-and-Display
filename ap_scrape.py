@@ -3,15 +3,11 @@ from bs4 import BeautifulSoup
 import time
 import random
 
-def fetch_and_process_data(url):
-    # Step 1: Fetch the web page
+def fetch_and_process_data(url, names_list=None):
     response = requests.get(url)
     web_page = response.content
-
-    # Step 2: Parse the web page with BeautifulSoup
     soup = BeautifulSoup(web_page, 'html.parser')
 
-    # Step 3: Extract data from the table
     # Find all rows in the table
     rows = soup.find_all('tr')
 
@@ -26,10 +22,15 @@ def fetch_and_process_data(url):
         
         # Check if the row has enough columns and the 5th column has a data-sort attribute
         if len(tds) >= 6 and tds[4].get('data-sort'):
-            # Extract text from the 3rd, 5th, and 6th columns
+            # Extract text from the 2nd, 3rd, 5th, and 6th columns
+            second_column_text = tds[1].text.strip()
             third_column_text = tds[2].text.strip()
             fifth_column_text = tds[4].text.strip()
             sixth_column_text = tds[5].text.strip()
+
+            # Check if names_list is provided and the second column matches any name in the list
+            if names_list and second_column_text not in names_list:
+                continue
             
             # Split the fifth column text into A and B
             try:
@@ -45,7 +46,7 @@ def fetch_and_process_data(url):
             row_string = f"{third_column_text}: {fifth_column_text} {sixth_column_text}%"
             row_data.append(row_string)
     
-    # Combine the accumulated values of A and B in the A/B format
+    # Combine the accumulated values of A and B
     result = f"Total: {total_A}/{total_B}"
     
     # Write one of the row strings to a text file
@@ -54,7 +55,7 @@ def fetch_and_process_data(url):
         with open('row_data.txt', 'w') as row_file:
             row_file.write(random_row)
     
-    # Write the total result to another text file
+    # Write the total result to a text file
     with open('total_result.txt', 'w') as total_file:
         total_file.write(result)
     
@@ -66,9 +67,20 @@ def fetch_and_process_data(url):
 # Ask the user for the URL
 url = input("Please enter the URL of the web page: ")
 
+# Ask the user if they want to filter by usernames
+filter_choice = input("Do you want to filter by usernames? (yes/no): ").strip().lower()
+
+names_list = []
+if filter_choice == "yes":
+    while True:
+        name = input("Enter a username (or press enter to finish): ").strip()
+        if not name:
+            break
+        names_list.append(name)
+
 while True:
-    fetch_and_process_data(url)
+    fetch_and_process_data(url, names_list if filter_choice == "yes" else None)
     
-    # Wait for 60 seconds
+    # Wait for 15 seconds
     for i in range(15):
         time.sleep(1)
